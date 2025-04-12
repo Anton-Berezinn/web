@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"projectgrom/web/internal/config"
-	"projectgrom/web/internal/handlers"
+	"projectgrom/internal/config"
+	"projectgrom/internal/handlers"
 )
 
 func CORSMiddleware(next http.Handler) http.Handler {
