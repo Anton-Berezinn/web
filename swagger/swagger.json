@@ -1,0 +1,250 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Conduit API",
+    "version": "1.0.0",
+    "title": "Conduit Api"
+  },
+  "license": {
+    "name": "MIT License",
+    "url": "https://opensource.org/licenses/MIT"
+  },
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Token": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT token for authorization (optional)"
+    }
+  },
+  "paths": {
+    "/main": {
+      "get": {
+        "summary": "Main page",
+        "description": "Предоставляет данные о товарах",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Products"
+            }
+          }
+        }
+      }
+    },
+    "/main/product": {
+      "get": {
+        "summary": "Get Product",
+        "description": "Получает товар на который он перешел",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "query",
+            "description": "The ID of the product",
+            "type": "string",
+            "example": "4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ProductList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "Register Users",
+        "description": "Регистрация пользователей",
+        "tags": ["Auth"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["firstname", "lastname", "login", "password"],
+              "properties": {
+                "firstname": {
+                  "type": "string",
+                  "example": "Иван"
+                },
+                "lastname": {
+                  "type": "string",
+                  "example": "Иванов"
+                },
+                "login": {
+                  "type": "string",
+                  "example": "ivanov"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "secret123"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Успешная регистрация",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "token": "abcdefg123456"
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка в переданных данных",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "error": "Логин уже используется"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login",
+        "description": "Вход в систему пользователя",
+        "tags": ["Auth"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "credentials",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["login", "password"],
+              "properties": {
+                "login": {
+                  "type": "string",
+                  "example": "ivanov"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "secret123"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешно зашел",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "token": "xyz987654321"
+              }
+            }
+          },
+          "400": {
+            "description": "Неверные данные пользователя",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "error": "Неверный логин или пароль"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Products": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Products"
+      }
+    },
+    "ProductList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ProductList"
+      }
+    },
+    "Products": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Product Name"
+        },
+        "description": {
+          "type": "string",
+          "example": "Description of the product"
+        },
+        "price": {
+          "type": "float",
+          "example": 19.99
+        }
+      }
+    },
+    "ProductList": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "4"
+        },
+        "name": {
+          "type":"string",
+          "example": "anton"
+        },
+        "description": {
+          "type":"string",
+          "example": "bio product"
+        },
+        "price": {
+          "type": "integer",
+          "example": 500
+        }
+      }
+    }
+  }
+}

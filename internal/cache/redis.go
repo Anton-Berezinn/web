@@ -12,6 +12,7 @@ var (
 	ConnectError = errors.New("redis connect error")
 	DelErr       = errors.New("value > 1")
 	NotFound     = errors.New("value not found")
+	NoOkError    = errors.New("value not ok")
 )
 
 type RedisCache struct {
@@ -37,12 +38,16 @@ func InitRedis() (*RedisCache, error) {
 }
 
 // Add - метод, добавляем данные в redis.
-func (r *RedisCache) Add(key, value string) (string, error) {
+func (r *RedisCache) Add(key, value string) error {
 	resul, err := r.Set(key, value, 100*time.Minute).Result()
 	if err != nil {
-		return "", err
+		return err
 	}
-	return resul, nil
+	if resul == "OK" {
+		return nil
+	}
+	return fmt.Errorf("%w", NoOkError)
+
 }
 
 // GetValue - метод, ищем значение по ключу

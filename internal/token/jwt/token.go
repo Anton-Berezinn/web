@@ -15,15 +15,13 @@ var (
 )
 
 type Token struct {
-	Id   int
 	Name string
 	jwt.StandardClaims
 }
 
 // InitToken - функция, создаем структуру.
-func InitToken(id int, name string) *Token {
+func InitToken(name string) *Token {
 	return &Token{
-		Id:   id,
 		Name: name,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 5).Unix(),
@@ -32,16 +30,9 @@ func InitToken(id int, name string) *Token {
 }
 
 // CreateToken - функция, создает токен.
-func CreateToken(id int, name string) (string, error) {
-	newToken := InitToken(id, name)
-	key, err := config.CreateKey()
-	if err != nil {
-		if errors.Is(err, config.EmptyKeyError) {
-			fmt.Println("key is empty")
-			return "", err
-		}
-		return "", err
-	}
+func CreateToken(name string) (string, error) {
+	newToken := InitToken(name)
+	key := config.SecretKey
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, newToken).SignedString([]byte(key))
 	if err != nil {
 		return "", fmt.Errorf("%w", CreateErr)
@@ -51,10 +42,7 @@ func CreateToken(id int, name string) (string, error) {
 
 // ParseToken - фукнция, парсит токен.
 func ParseToken(tokenString string) (*Token, error) {
-	key, err := config.GetKey()
-	if err != nil {
-		return nil, fmt.Errorf("%w", TokenErr)
-	}
+	key := config.SecretKey
 	token, err := jwt.ParseWithClaims(tokenString, &Token{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method %v", t.Header["alg"])

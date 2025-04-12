@@ -1,0 +1,34 @@
+ "produces": ["application/json"],  описывает что принимает и отдает application/json
+  "consumes": ["application/json"]
+
+  "securityDefinitions": {
+    "Token": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+  описываем что клиент должен передать ключ apiKey-jwt,name-имя по какому достану, in-токен должен быть передан в Header
+
+
+      "get": {
+        "summary": "Main page",
+        "description": "Предоставляет данные о товарах",
+        "tags":[] - группирует с одинаковыми тегами
+        summary-короткое описание, description длинное описание
+
+
+
+   "parameters": [
+            "name": "body",
+            "in": "header",
+            "required": false,
+            "description": "JWT token for authorization (optional)",
+            "schema": {
+              "$ref": "#/definitions/UserMainRequest"
+            }
+          ] скобки!!!!
+          in- указывает откуда будет извлечен параметр запроса
+
+   указали required что токен может быть необязателен
+   description указали, schema struct

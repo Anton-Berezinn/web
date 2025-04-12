@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/lib/pq"
+	"strings"
 )
 
 type StoragRegister struct {
@@ -20,6 +21,11 @@ var (
 	DataError        = errors.New("error to add to database")
 	Rowserror        = errors.New("rows is 0")
 	CreateTableError = errors.New("error to create table")
+	UpdateError      = errors.New("error to update table")
+	RowsError        = errors.New("rows is 0")
+	DeleteError      = errors.New("error to delete table")
+	LenPassError     = errors.New("password len")
+	NoLoginError     = errors.New("no login")
 )
 
 func NewStorageRegister(data string) (*StoragRegister, error) {
@@ -30,40 +36,71 @@ func NewStorageRegister(data string) (*StoragRegister, error) {
 	if err := db.Ping(); err != nil {
 		return nil, fmt.Errorf("%w", ConnectDb)
 	}
-	err = CreateTable(db)
-	if err != nil {
-		return nil, fmt.Errorf("%s %w", err, CreateTableError)
-	}
 	return &StoragRegister{db: db}, nil
 }
 
-func CreateTable(db *sql.DB) error {
-	_, err := db.Exec("DROP DATABASE IF EXISTS users")
+func (s *StoragRegister) Register(firstname, lastname, login, password string) error {
+	count, err := s.db.Exec("INSERT INTO users(login,firstname,lastname,password)VALUES($1,$2,$3,$4);", login, firstname, lastname, password)
 	if err != nil {
-		return err
+		fmt.Println("error to Exec error:", err)
+		if strings.Contains(err.Error(), "CHECK (LENGTH(password) > 6)") {
+			return fmt.Errorf("%w", LenPassError)
+		}
+		return fmt.Errorf("%w", DataError)
 	}
-	_, err = db.Exec("CREATE DATABASE users(" +
-		"id INT PRIMARY KEY," +
-		"name VARCHAR(255)," +
-		"surname VARCHAR(255)," +
-		"login VARCHAR(255), " +
-		"password VARCHAR(255), " +
-		"CHECK (LENGTH(password) > 6)," +
-		"CHECK (LENGTH(login) > 6);")
-	if err != nil {
-		return err
+	value, err := count.RowsAffected()
+	if err != nil || value != 1 {
+		return fmt.Errorf("%w", Rowserror)
 	}
 	return nil
 }
 
-func (s *StoragRegister) Register(name, surname, login, password string) (bool, error) {
-	count, err := s.db.Exec("INSERT INTO users(name,surname,login,password)VALUES($1,$2,$3,$4);", name, surname, login, password)
+func (s *StoragRegister) Update(login, password string) error {
+	val, err := s.db.Exec("UPDATE users SET password=$1 WHERE login=$2;", password, login)
 	if err != nil {
-		return false, fmt.Errorf("%w", DataError)
+		return fmt.Errorf("%w", UpdateError)
 	}
-	value, err := count.RowsAffected()
-	if err != nil || value != 1 {
-		return false, fmt.Errorf("%w", Rowserror)
+	value, err := val.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%w", UpdateError)
 	}
-	return true, nil
+	if value != 1 {
+		return fmt.Errorf("%w", RowsError)
+	}
+	return nil
+}
+
+func (s *StoragRegister) Delete(login string) error {
+	val, err := s.db.Exec("DELETE FROM users WHERE login=$1;", login)
+	if err != nil {
+		return fmt.Errorf("%w", DeleteError)
+	}
+	value, err := val.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("%w", DeleteError)
+	}
+	if value != 1 {
+		return fmt.Errorf("%w", RowsError)
+	}
+	return nil
+}
+
+func (s *StoragRegister) CheckPassword(login, passwordUser string) error {
+	value, err := s.db.Query("SELECT password FROM users WHERE login=$1;", login)
+	if err != nil {
+		fmt.Println("Ошибка при выполнении запроса:", err)
+		return DataError
+	}
+	defer value.Close()
+	if !value.Next() {
+		return fmt.Errorf("%w", NoLoginError)
+	}
+	var password sql.NullString
+	if err := value.Scan(&password); err != nil {
+		return err
+	}
+	if !password.Valid || password.String != passwordUser {
+		return fmt.Errorf("%w", NoLoginError)
+	}
+	return nil
 }
