@@ -12,6 +12,7 @@ import (
 )
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("here")
 	token := r.Header.Get("Authorization")
 	if token != "" {
 		err := h.redis.Get(token).Err()
@@ -40,7 +41,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("dto login error:", err)
 		return
 	}
-	err = h.register.GetUser(data.Login, data.Password)
+	err = h.register.GetUserLogin(data.Login, data.Password)
 	if err != nil {
 		if errors.Is(err, register.NoLoginError) {
 			w.WriteHeader(400)
@@ -62,8 +63,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error to sql CreateToken")
 		return
 	}
+	w.Header().Add("Authorization", token)
 	w.WriteHeader(200)
-	w.Header().Set("Authorization", token)
 	w.Write([]byte("SUCCESS"))
 	return
 }

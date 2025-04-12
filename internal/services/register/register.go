@@ -34,6 +34,6 @@ func (r *RegisterService) DeleteUser(login string) error {
 	return r.storage.Delete(login)
 }
 
-func (r *RegisterService) GetUser(login, password string) error {
-	return r.GetUser(login, password)
+func (r *RegisterService) GetUserLogin(login, password string) error {
+	return r.storage.CheckPassword(login, password)
 }
