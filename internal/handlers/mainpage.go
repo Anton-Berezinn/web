@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"projectgrom/web/internal/cache"
-	"projectgrom/web/internal/token/jwt"
+	"projectgrom/internal/cache"
+	"projectgrom/internal/token/jwt"
 	"time"
 )
 

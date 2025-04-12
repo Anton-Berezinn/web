@@ -2,8 +2,8 @@ package products
 
 import (
 	"context"
-	"projectgrom/web/internal/model"
-	p "projectgrom/web/internal/repository/products"
+	"projectgrom/internal/model"
+	p "projectgrom/internal/repository/products"
 )
 
 type ProductsService struct {

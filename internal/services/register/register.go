@@ -3,7 +3,7 @@ package register
 import (
 	"errors"
 	"fmt"
-	"projectgrom/web/internal/repository/register"
+	"projectgrom/internal/repository/register"
 )
 
 type RegisterService struct {

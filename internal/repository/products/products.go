@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/lib/pq"
-	"projectgrom/web/internal/model"
+	"projectgrom/internal/model"
 )
 
 type ProductsDB struct {

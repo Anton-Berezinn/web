@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"net/http"
-	"projectgrom/web/internal/config"
+	"projectgrom/internal/config"
 	"time"
 )
 

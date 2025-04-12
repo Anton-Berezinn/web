@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"projectgrom/web/internal/cache"
-	"projectgrom/web/internal/config"
-	"projectgrom/web/internal/dto"
-	"projectgrom/web/internal/repository/register"
-	"projectgrom/web/internal/token/jwt"
+	"projectgrom/internal/cache"
+	"projectgrom/internal/config"
+	"projectgrom/internal/dto"
+	"projectgrom/internal/repository/register"
+	"projectgrom/internal/token/jwt"
 )
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {

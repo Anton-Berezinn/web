@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"projectgrom/web/internal/cache"
-	"projectgrom/web/internal/config"
-	"projectgrom/web/internal/dto"
-	storag "projectgrom/web/internal/repository/register"
-	"projectgrom/web/internal/services/products"
-	"projectgrom/web/internal/services/register"
-	"projectgrom/web/internal/token/jwt"
+	"projectgrom/internal/cache"
+	"projectgrom/internal/config"
+	"projectgrom/internal/dto"
+	storag "projectgrom/internal/repository/register"
+	"projectgrom/internal/services/products"
+	"projectgrom/internal/services/register"
+	"projectgrom/internal/token/jwt"
 )
 
 type Handler struct {
